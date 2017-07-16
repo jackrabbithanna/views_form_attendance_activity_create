@@ -2,7 +2,7 @@
 
 /**
  * @file
- * A Views' field handler for selecting an Activity Attendance value.
+ * A Views field handler for selecting an Activity Attendance value.
  */
 
 /**
@@ -22,7 +22,6 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
   function render($values) {
     // Render a Views form item placeholder.
     // This causes Views to wrap the View in a form.
-    // Render a Views form item placeholder.
     return '<!--form-item-' . $this->options['id'] . '--' . $this->view->row_index . '-->';
   }
 
@@ -30,7 +29,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
    * Add to and alter the form created by Views.
    */
   function views_form(&$form, &$form_state) {
-    // get our attendance options (for now hard coded)
+    // get our attendance options
     $attendance_options = ['default' => 'Use Default', 'no_create' => 'Do not create activity'] + _views_form_attendance_activity_create_get_attendance_value_options();
 
     // Create a container for our replacements
@@ -70,7 +69,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
     // Iterate over the view result.
     if (!empty($attendance_custom_field) && !empty($attendance_date_custom_field)) {
       foreach ($this->view->result as $row_index => $row) {
-        // Grab the correspondingly submitted form value.
+        // Grab the correspondingly submitted form values
         $attendance_value = $form_state['values'][$this->options['id']][$row_index];
         $cid = $form_state['values']['cid'][$row_index];
         // cid should go tho target_contact_id

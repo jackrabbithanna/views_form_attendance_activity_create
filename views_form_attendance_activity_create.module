@@ -185,3 +185,4 @@ function _views_form_attendance_activity_create_get_activity_type_options() {
 
   return $options;
 }
+
