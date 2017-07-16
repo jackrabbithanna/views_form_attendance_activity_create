@@ -1,3 +1,7 @@
 .form-item-default-options-section-date-time {
     /*display:none;*/
 }
+
+.views-form div.form-wrapper input.form-checkbox {
+    margin-right:5px;
+}
