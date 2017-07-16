@@ -53,11 +53,17 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       '#default_value' => variable_get('views_form_attendance_activity_create_activity_type', ''),
       '#required' => TRUE,
     ];
-    $form['default_options_section']['value'] = [
+    $form['default_options_section']['attendance'] = [
       '#type' => 'select',
-      '#title' => 'Default Activity Value',
+      '#title' => 'Default Activity Attendance Value',
       '#options' => _views_form_attendance_activity_create_get_attendance_value_options(),
       '#default_value' => 'Present',
+    ];
+    $form['default_options_section']['activity'] = [
+      '#type' => 'select',
+      '#title' => 'Default Activity Value',
+      '#options' => ['' => 'No value'] + _views_form_attendance_activity_create_get_activity_cf_value_options(),
+      '#default_value' => '',
     ];
 
     // Create a container for our replacements
@@ -84,9 +90,19 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       ];
       $form[$this->options['id']][$row_index]['attendance'] = [
         '#type' => 'select',
+        '#title' => t('Attendance Status'),
         '#options' => ['default' => 'Use Default'] + _views_form_attendance_activity_create_get_attendance_value_options(),
         '#default_value' => 'default',
-        '#theme_wrappers' => [],
+        '#prefix' => '<span class="attendance-create-select">',
+        '#suffix' => '</span>',
+      ];
+      $form[$this->options['id']][$row_index]['activity'] = [
+        '#type' => 'select',
+        '#title' => t('Activity'),
+        '#options' => ['' => 'No value', 'default' => 'Use Default'] + _views_form_attendance_activity_create_get_activity_cf_value_options(),
+        '#default_value' => 'default',
+        '#prefix' => '<span class="attendance-create-select">',
+        '#suffix' => '</span>',
       ];
 
     }
@@ -98,16 +114,19 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
   function views_form_submit($form, &$form_state) {
     $attendance_custom_field = variable_get('views_form_attendance_activity_create_attendance_cf_id', '');
     $attendance_date_custom_field = variable_get('views_form_attendance_activity_create_attendance_date_cf_id', '');
+    $attendance_activity_custom_field = variable_get('views_form_attendance_activity_create_attendance_activity_cf_id', '');
 
     $default_date = $form_state['values']['default_options_section']['date'];
     $activity_type_id = $form_state['values']['default_options_section']['type'];
-    $default_attendance_status = $form_state['values']['default_options_section']['value'];
+    $default_attendance_status = $form_state['values']['default_options_section']['attendance'];
+    $default_activity_value = $form_state['values']['default_options_section']['activity'];
 
     // Iterate over the view result.
-    if (!empty($attendance_custom_field) && !empty($attendance_date_custom_field)) {
+    if (!empty($attendance_custom_field) && !empty($attendance_date_custom_field) && !empty($attendance_activity_custom_field)) {
       foreach ($this->view->result as $row_index => $row) {
         // Grab the correspondingly submitted form values
         $attendance_value = $form_state['values'][$this->options['id']][$row_index]['attendance'];
+        $activity_value = $form_state['values'][$this->options['id']][$row_index]['activity'];
         $cid = $form_state['values'][$this->options['id']][$row_index]['cid'];
         $create_activity = $form_state['values'][$this->options['id']][$row_index]['select_row'];
 
@@ -125,6 +144,17 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
           else {
             $params[$attendance_custom_field] = $attendance_value;
           }
+          if (!empty($activity_value)) {
+            if ($activity_value == 'default') {
+              if (!empty($default_activity_value)) {
+                $params[$attendance_activity_custom_field] = $default_activity_value;
+              }
+            }
+            else {
+              $params[$attendance_activity_custom_field] = $activity_value;
+            }
+          }
+
           try {
             $result = civicrm_api3('Activity', 'create', $params);
             drupal_set_message('Activity created for contact with cid:' . $cid);

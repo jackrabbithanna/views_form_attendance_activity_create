@@ -5,3 +5,9 @@
 .views-form div.form-wrapper input.form-checkbox {
     margin-right:5px;
 }
+
+.views-form  div.form-wrapper .attendance-create-select {
+    display:inline-block;
+    vertical-align:middle;
+    margin-right:5px;
+}

@@ -73,6 +73,14 @@ function _views_form_attendance_activity_create_admin_settings_form() {
     '#default_value' => variable_get('views_form_attendance_activity_create_attendance_date_cf_id', ''),
   ];
 
+  $form['views_form_attendance_activity_create_attendance_activity_cf_id'] = [
+    '#type' => 'select',
+    '#required' => TRUE,
+    '#title' => t('Activity Custom Field'),
+    '#options' => $activity_custom_field_options,
+    '#default_value' => variable_get('views_form_attendance_activity_create_attendance_activity_cf_id', ''),
+  ];
+
   $form['views_form_attendance_activity_create_activity_type'] = [
     '#type' => 'select',
     '#required' => TRUE,
@@ -121,6 +129,35 @@ function _views_form_attendance_activity_create_get_attendance_value_options() {
   }
   return $options;
 }
+
+/**
+ * Utility function to get the option values for the Attendance Activity custom field
+ */
+function _views_form_attendance_activity_create_get_activity_cf_value_options() {
+  if (!civicrm_initialize()) {
+    return [];
+  }
+  $options = [];
+  try {
+    $activity_custom_field = variable_get('views_form_attendance_activity_create_attendance_activity_cf_id', '');
+    if (!empty($activity_custom_field)) {
+      $result = civicrm_api3('Activity', 'getoptions', [
+        'sequential' => 1,
+        'field'      => $activity_custom_field,
+      ]);
+      if (!empty($result['count'])) {
+        foreach ($result['values'] as $index => $value_data) {
+          $options[$value_data['key']] = $value_data['value'];
+
+        }
+      }
+    }
+  }
+  catch (Exception $e) {
+  }
+  return $options;
+}
+
 
 /**
  * Utility function to get options for Activity Types
