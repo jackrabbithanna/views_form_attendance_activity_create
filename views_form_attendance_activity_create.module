@@ -1,0 +1,187 @@
+<?php
+
+/**
+ * Implements hook_permissions().
+ */
+function views_form_attendance_activity_create_permissions() {
+  return [
+    'administer attendence activity create' => [
+      'title' => t('Administer Views Form Attendance Activity Create'),
+      'description' => t('Perform administration tasks Views Form Attendance Activity Create.'),
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function views_form_attendance_activity_create_menu() {
+  $items = [];
+
+  $items['admin/config/attendance-activity-create'] = [
+    'title' => 'Attendance Activity Create',
+    'description' => 'Configure Views Form Attendance Activity Create settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['_views_form_attendance_activity_create_admin_settings_form'],
+    'access arguments' => ['administer attendence activity create'],
+    'type' => MENU_NORMAL_ITEM,
+  ];
+
+  return $items;
+}
+
+/**
+ * Form callback for the admin form of this module at 'admin/config/attendance-activity-create'
+ *
+ * @return array
+ */
+function _views_form_attendance_activity_create_admin_settings_form() {
+  $form = [];
+  $activity_custom_field_options = [];
+  if (civicrm_initialize()) {
+    try {
+      $result = civicrm_api3('Activity', 'getfields', array(
+        'sequential' => 1,
+        'api_action' => "create",
+      ));
+      if (!empty($result['count'])) {
+        foreach ($result['values'] as $index => $field_data) {
+          if (strpos($field_data['name'], 'custom_') === 0) {
+            $activity_custom_field_options[$field_data['name']] = $field_data['title'];
+          }
+        }
+      }
+    }
+    catch (Exception $e) {
+    }
+  }
+
+  $form['views_form_attendance_activity_create_attendance_cf_id'] = [
+    '#type' => 'select',
+    '#required' => TRUE,
+    '#title' => t('Attendance Custom Field'),
+    '#options' => $activity_custom_field_options,
+    '#default_value' => variable_get('views_form_attendance_activity_create_attendance_cf_id', ''),
+  ];
+
+  $form['views_form_attendance_activity_create_attendance_date_cf_id'] = [
+    '#type' => 'select',
+    '#required' => TRUE,
+    '#title' => t('Attendance Date Custom Field'),
+    '#options' => $activity_custom_field_options,
+    '#default_value' => variable_get('views_form_attendance_activity_create_attendance_date_cf_id', ''),
+  ];
+
+  $form['views_form_attendance_activity_create_activity_type'] = [
+    '#type' => 'select',
+    '#required' => TRUE,
+    '#title' => t('Activity Type'),
+    '#options' => _views_form_attendance_activity_create_get_activity_type_options(),
+    '#default_value' => variable_get('views_form_attendance_activity_create_activity_type', '')
+  ];
+
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function views_form_attendance_activity_create_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'views_form_attendance_activity_create') . '/views',
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function views_form_attendance_activity_create_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'views_form_contacts_activity_create_proto_page') {
+    $form['#attached']['css'][] = drupal_get_path('module', 'views_form_attendance_activity_create') . '/css/views_form.css';
+
+     // Create a container for our replacements
+    $form['default_options_section'] = [
+      '#type' => 'container',
+      '#tree' => TRUE,
+      '#weight' => -1,
+      '#prefix' => '<h3>Default Values</h3>',
+      '#suffix' => '<h3>Contacts</h3>',
+    ];
+
+    $form['default_options_section']['date'] = [
+      '#type' => 'date_popup',
+      '#date_format' => 'Y-m-d H:i:s',
+      '#date_year_range' => '-1:+1',
+      '#default_value' => date('Y-m-d H:i:s'),
+    ];
+    $form['default_options_section']['type'] = [
+      '#type' => 'select',
+      '#title' => 'Activity Type',
+      '#options' =>  _views_form_attendance_activity_create_get_activity_type_options(),
+      '#default_value' => variable_get('views_form_attendance_activity_create_activity_type', ''),
+    ];
+    $form['default_options_section']['value'] = [
+      '#type' => 'select',
+      '#title' => 'Default Activity Value',
+      '#options' => ['no_create' => 'Do not create activity'] + _views_form_attendance_activity_create_get_attendance_value_options(),
+      '#default_value' => '',
+    ];
+  }
+}
+
+/**
+ * Utility function to get the option values for the Attendance custom field
+ */
+function _views_form_attendance_activity_create_get_attendance_value_options() {
+  if (!civicrm_initialize()) {
+    return [];
+  }
+  $options = [];
+  try {
+    $attendance_custom_field = variable_get('views_form_attendance_activity_create_attendance_cf_id', '');
+    if (!empty($attendance_custom_field)) {
+      $result = civicrm_api3('Activity', 'getoptions', [
+        'sequential' => 1,
+        'field'      => $attendance_custom_field,
+      ]);
+      if (!empty($result['count'])) {
+        foreach ($result['values'] as $index => $value_data) {
+          $options[$value_data['key']] = $value_data['value'];
+
+        }
+      }
+    }
+  }
+  catch (Exception $e) {
+  }
+  return $options;
+}
+
+/**
+ * Utility function to get options for Activity Types
+ *
+ * @return array
+ */
+function _views_form_attendance_activity_create_get_activity_type_options() {
+  $options = [];
+  if (civicrm_initialize()) {
+    try {
+      $result = civicrm_api3('OptionValue', 'get', [
+        'sequential' => 1,
+        'option_group_id' => "activity_type",
+        'options' => ['limit' => 0],
+      ]);
+      if (!empty($result['count'])) {
+        foreach ($result['values'] as $index => $value_data) {
+          $options[$value_data['value']] = $value_data['label'];
+        }
+      }
+    }
+    catch (Exception $e) {
+    }
+  }
+
+  return $options;
+}

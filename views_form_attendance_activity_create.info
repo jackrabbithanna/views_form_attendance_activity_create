@@ -1,0 +1,9 @@
+name = Views Form Attendance Activity Create
+description = Provides Views Form elements for creating activities from a View of Contacts
+core = 7.x
+configure = admin/config/attendance-activity-create
+dependencies[] = civicrm
+dependencies[] = views
+dependencies[] = date_popup
+
+files[] = views/views_form_attendance_activity_create_field_handler_attendance.inc
