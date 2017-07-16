@@ -65,7 +65,6 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
    * Form submit method.
    */
   function views_form_submit($form, &$form_state) {
-    dsm($form_state);
     $attendance_custom_field = variable_get('views_form_attendance_activity_create_attendance_cf_id', '');
     $attendance_date_custom_field = variable_get('views_form_attendance_activity_create_attendance_date_cf_id', '');
     // Iterate over the view result.
