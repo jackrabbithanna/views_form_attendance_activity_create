@@ -113,7 +113,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
    */
   function views_form(&$form, &$form_state) {
     $form['#attached']['css'][] = drupal_get_path('module', 'views_form_attendance_activity_create') . '/css/views_form.css';
-dsm($this->options);
+
     $form['default_options_section'] = [
       '#type' => 'container',
       '#tree' => TRUE,
