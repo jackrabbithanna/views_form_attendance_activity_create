@@ -89,6 +89,19 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
     ];
   }
 
+  /**
+   * If the view is using a table style, provide a
+   * placeholder for a "select all" checkbox.
+   */
+  function label() {
+    if (!empty($this->view->style_plugin) && $this->view->style_plugin instanceof views_plugin_style_table) {
+      return '<!--views-form-attendance-activity-create-select-all-->';
+    }
+    else {
+      return parent::label();
+    }
+  }
+
   function render($values) {
     // Render a Views form item placeholder.
     // This causes Views to wrap the View in a form.
@@ -100,7 +113,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
    */
   function views_form(&$form, &$form_state) {
     $form['#attached']['css'][] = drupal_get_path('module', 'views_form_attendance_activity_create') . '/css/views_form.css';
-
+dsm($this->options);
     $form['default_options_section'] = [
       '#type' => 'container',
       '#tree' => TRUE,
@@ -126,13 +139,13 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
     $form['default_options_section']['attendance'] = [
       '#type' => 'select',
       '#title' => 'Default Activity Attendance Value',
-      '#options' => _views_form_attendance_activity_create_get_attendance_value_options(),
+      '#options' => _views_form_attendance_activity_create_get_attendance_value_options($this->options['views_form_attendance_activity_create_attendance_cf_id']),
       '#default_value' => 'Present',
     ];
     $form['default_options_section']['activity'] = [
       '#type' => 'select',
       '#title' => 'Default Activity Value',
-      '#options' => ['' => 'No value'] + _views_form_attendance_activity_create_get_activity_cf_value_options(),
+      '#options' => ['' => 'No value'] + _views_form_attendance_activity_create_get_activity_cf_value_options($this->options['views_form_attendance_activity_create_attendance_activity_cf_id']),
       '#default_value' => '',
     ];
 
@@ -161,7 +174,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       $form[$this->options['id']][$row_index]['attendance'] = [
         '#type' => 'select',
         '#title' => t('Attendance Status'),
-        '#options' => ['default' => 'Use Default'] + _views_form_attendance_activity_create_get_attendance_value_options(),
+        '#options' => ['default' => 'Use Default'] + _views_form_attendance_activity_create_get_attendance_value_options($this->options['views_form_attendance_activity_create_attendance_cf_id']),
         '#default_value' => 'default',
         '#prefix' => '<span class="attendance-create-select">',
         '#suffix' => '</span>',
@@ -169,7 +182,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       $form[$this->options['id']][$row_index]['activity'] = [
         '#type' => 'select',
         '#title' => t('Activity'),
-        '#options' => ['' => 'No value', 'default' => 'Use Default'] + _views_form_attendance_activity_create_get_activity_cf_value_options(),
+        '#options' => ['' => 'No value', 'default' => 'Use Default'] + _views_form_attendance_activity_create_get_activity_cf_value_options($this->options['views_form_attendance_activity_create_attendance_activity_cf_id']),
         '#default_value' => 'default',
         '#prefix' => '<span class="attendance-create-select">',
         '#suffix' => '</span>',

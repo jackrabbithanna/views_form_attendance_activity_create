@@ -23,19 +23,37 @@ function views_form_attendance_activity_create_views_api() {
 }
 
 /**
+ * Implements hook_views_form_substitutions().
+ */
+function views_form_attendance_activity_create_views_form_substitutions() {
+  // Views check_plains the column label, so VBO needs to do the same
+  // in order for the replace operation to succeed.
+  $select_all_placeholder = check_plain('<!--views-form-attendance-activity-create-select-all-->');
+  $select_all = array(
+    '#type' => 'checkbox',
+    '#title' => 'Attendance',
+    '#default_value' => FALSE,
+    '#attributes' => array('class' => array('views-form-attendance-activity-create-select-all')),
+  );
+
+  return array(
+    $select_all_placeholder => drupal_render($select_all),
+  );
+}
+
+/**
  * Utility function to get the option values for the Attendance custom field
  */
-function _views_form_attendance_activity_create_get_attendance_value_options() {
+function _views_form_attendance_activity_create_get_attendance_value_options($custom_field_id) {
   if (!civicrm_initialize()) {
     return [];
   }
   $options = [];
   try {
-    $attendance_custom_field = variable_get('views_form_attendance_activity_create_attendance_cf_id', '');
-    if (!empty($attendance_custom_field)) {
+    if (!empty($custom_field_id)) {
       $result = civicrm_api3('Activity', 'getoptions', [
         'sequential' => 1,
-        'field'      => $attendance_custom_field,
+        'field'      => $custom_field_id,
       ]);
       if (!empty($result['count'])) {
         foreach ($result['values'] as $index => $value_data) {
@@ -53,17 +71,17 @@ function _views_form_attendance_activity_create_get_attendance_value_options() {
 /**
  * Utility function to get the option values for the Attendance Activity custom field
  */
-function _views_form_attendance_activity_create_get_activity_cf_value_options() {
+function _views_form_attendance_activity_create_get_activity_cf_value_options($custom_field_id) {
   if (!civicrm_initialize()) {
     return [];
   }
   $options = [];
   try {
-    $activity_custom_field = variable_get('views_form_attendance_activity_create_attendance_activity_cf_id', '');
-    if (!empty($activity_custom_field)) {
+
+    if (!empty($custom_field_id)) {
       $result = civicrm_api3('Activity', 'getoptions', [
         'sequential' => 1,
-        'field'      => $activity_custom_field,
+        'field'      => $custom_field_id,
       ]);
       if (!empty($result['count'])) {
         foreach ($result['values'] as $index => $value_data) {
@@ -132,3 +150,4 @@ function _views_form_attendance_activity_create_get_user_cid($account = []) {
   }
   return 0;
 }
+
