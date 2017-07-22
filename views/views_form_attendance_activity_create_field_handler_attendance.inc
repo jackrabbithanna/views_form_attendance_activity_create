@@ -112,7 +112,20 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
    * Add to and alter the form created by Views.
    */
   function views_form(&$form, &$form_state) {
-    $form['#attached']['css'][] = drupal_get_path('module', 'views_form_attendance_activity_create') . '/css/views_form.css';
+    $form['#attached']['css'][] = drupal_get_path('module', 'views_form_attendance_activity_create') . '/css/views_form_attendance_activity_create.css';
+    $form['#attached']['js'][] = drupal_get_path('module', 'views_form_attendance_activity_create') . '/js/views_form_attendance_activity_create.js';
+    $class = 'vfaac-views-form';
+
+    $form['#prefix'] = '<div class="' . $class . '">';
+    $form['#suffix'] = '</div>';
+
+    // Force browser to reload the page if Back is hit.
+    if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/msie/i', $_SERVER['HTTP_USER_AGENT'])) {
+      drupal_add_http_header('Cache-Control', 'no-cache'); // works for IE6+
+    }
+    else {
+      drupal_add_http_header('Cache-Control', 'no-store'); // works for Firefox and other browsers
+    }
 
     $form['default_options_section'] = [
       '#type' => 'container',
@@ -166,10 +179,11 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
         '#type' => 'value',
         '#value' => $row->id,
       ];
-      $form[$this->options['id']][$row_index]['select_row'] = [
+      $form[$this->options['id']][$row_index]['vfaac_select_row'] = [
         '#type' => 'checkbox',
         '#return_value' => 1,
         '#theme_wrappers' => [],
+        '#attributes' => array('class' => array('views-form-attendance-activity-create-select')),
       ];
       $form[$this->options['id']][$row_index]['attendance'] = [
         '#type' => 'select',
@@ -211,7 +225,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
         $attendance_value = $form_state['values'][$this->options['id']][$row_index]['attendance'];
         $activity_value = $form_state['values'][$this->options['id']][$row_index]['activity'];
         $cid = $form_state['values'][$this->options['id']][$row_index]['cid'];
-        $create_activity = $form_state['values'][$this->options['id']][$row_index]['select_row'];
+        $create_activity = $form_state['values'][$this->options['id']][$row_index]['vfaac_select_row'];
 
         if (!empty($create_activity)) {
           $params = [

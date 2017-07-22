@@ -2,11 +2,11 @@
     /*display:none;*/
 }
 
-.views-form div.form-wrapper input.form-checkbox {
+.vfaac-views-form div.form-wrapper input.form-checkbox {
     margin-right:5px;
 }
 
-.views-form  div.form-wrapper .attendance-create-select {
+.vfaac-views-form  div.form-wrapper .attendance-create-select {
     display:inline-block;
     vertical-align:middle;
     margin-right:5px;
