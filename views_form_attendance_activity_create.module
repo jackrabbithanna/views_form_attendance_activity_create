@@ -1,18 +1,6 @@
 <?php
 
 /**
- * Implements hook_permissions().
- */
-function views_form_attendance_activity_create_permissions() {
-  return [
-    'administer attendence activity create' => [
-      'title' => t('Administer Views Form Attendance Activity Create'),
-      'description' => t('Perform administration tasks Views Form Attendance Activity Create.'),
-    ],
-  ];
-}
-
-/**
  * Implements hook_views_api().
  */
 function views_form_attendance_activity_create_views_api() {
@@ -43,6 +31,10 @@ function views_form_attendance_activity_create_views_form_substitutions() {
 
 /**
  * Utility function to get the option values for the Attendance custom field
+ *
+ * @param $custom_field_id
+ *
+ * @return array
  */
 function _views_form_attendance_activity_create_get_attendance_value_options($custom_field_id) {
   if (!civicrm_initialize()) {
@@ -70,6 +62,9 @@ function _views_form_attendance_activity_create_get_attendance_value_options($cu
 
 /**
  * Utility function to get the option values for the Attendance Activity custom field
+ * @param $custom_field_id
+ *
+ * @return array
  */
 function _views_form_attendance_activity_create_get_activity_cf_value_options($custom_field_id) {
   if (!civicrm_initialize()) {
