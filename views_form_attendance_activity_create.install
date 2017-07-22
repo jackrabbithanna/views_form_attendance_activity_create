@@ -5,11 +5,10 @@
  * Install file for Views Form Attendance Activity Create
  */
 
-
 /**
- * Implements hook_uninstall().
+ * Remove unnecessary variables
  */
-function views_form_attendance_activity_create_uninstall() {
+function views_form_attendance_activity_create_update_7001(&$sandbox) {
   variable_del('views_form_attendance_activity_create_attendance_cf_id');
   variable_del('views_form_attendance_activity_create_activity_type');
   variable_del('views_form_attendance_activity_create_attendance_date_cf_id');

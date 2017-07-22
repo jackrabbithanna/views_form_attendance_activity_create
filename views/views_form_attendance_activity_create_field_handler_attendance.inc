@@ -19,6 +19,76 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
     $this->add_additional_fields();
   }
 
+  /**
+   * Default options form.
+   */
+  function option_definition() {
+    $options = parent::option_definition();
+
+    $options['views_form_attendance_activity_create_attendance_cf_id'] = array('default' => '');
+    $options['views_form_attendance_activity_create_attendance_date_cf_id'] = array('default' => '');
+    $options['views_form_attendance_activity_create_attendance_activity_cf_id'] = array('default' => '');
+    $options['views_form_attendance_activity_create_activity_type'] = array('default' => '');
+    return $options;
+  }
+
+  /**
+   * Creates the form item for the options added.
+   */
+  function options_form(&$form, &$form_state) {
+    parent::options_form($form, $form_state);
+    $activity_custom_field_options = [];
+    if (civicrm_initialize()) {
+      try {
+        $result = civicrm_api3('Activity', 'getfields', array(
+          'sequential' => 1,
+          'api_action' => "create",
+        ));
+        if (!empty($result['count'])) {
+          foreach ($result['values'] as $index => $field_data) {
+            if (strpos($field_data['name'], 'custom_') === 0) {
+              $activity_custom_field_options[$field_data['name']] = $field_data['title'];
+            }
+          }
+        }
+      }
+      catch (Exception $e) {
+      }
+    }
+
+    $form['views_form_attendance_activity_create_attendance_cf_id'] = [
+      '#type' => 'select',
+      '#required' => TRUE,
+      '#title' => t('Attendance Custom Field'),
+      '#options' => $activity_custom_field_options,
+      '#default_value' => $this->options['views_form_attendance_activity_create_attendance_cf_id'],
+    ];
+
+    $form['views_form_attendance_activity_create_attendance_date_cf_id'] = [
+      '#type' => 'select',
+      '#required' => TRUE,
+      '#title' => t('Attendance Date Custom Field'),
+      '#options' => $activity_custom_field_options,
+      '#default_value' => $this->options['views_form_attendance_activity_create_attendance_date_cf_id'],
+    ];
+
+    $form['views_form_attendance_activity_create_attendance_activity_cf_id'] = [
+      '#type' => 'select',
+      '#required' => TRUE,
+      '#title' => t('Activity Custom Field'),
+      '#options' => $activity_custom_field_options,
+      '#default_value' => $this->options['views_form_attendance_activity_create_attendance_activity_cf_id'],
+    ];
+
+    $form['views_form_attendance_activity_create_activity_type'] = [
+      '#type' => 'select',
+      '#required' => TRUE,
+      '#title' => t('Activity Type'),
+      '#options' => _views_form_attendance_activity_create_get_activity_type_options(),
+      '#default_value' => $this->options['views_form_attendance_activity_create_activity_type'],
+    ];
+  }
+
   function render($values) {
     // Render a Views form item placeholder.
     // This causes Views to wrap the View in a form.
@@ -50,7 +120,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       '#type' => 'select',
       '#title' => 'Activity Type',
       '#options' =>  _views_form_attendance_activity_create_get_activity_type_options(),
-      '#default_value' => variable_get('views_form_attendance_activity_create_activity_type', ''),
+      '#default_value' => $this->options['views_form_attendance_activity_create_activity_type'],
       '#required' => TRUE,
     ];
     $form['default_options_section']['attendance'] = [
@@ -112,9 +182,9 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
    * Form submit method.
    */
   function views_form_submit($form, &$form_state) {
-    $attendance_custom_field = variable_get('views_form_attendance_activity_create_attendance_cf_id', '');
-    $attendance_date_custom_field = variable_get('views_form_attendance_activity_create_attendance_date_cf_id', '');
-    $attendance_activity_custom_field = variable_get('views_form_attendance_activity_create_attendance_activity_cf_id', '');
+    $attendance_custom_field = $this->options['views_form_attendance_activity_create_attendance_cf_id'];
+    $attendance_date_custom_field = $this->options['views_form_attendance_activity_create_attendance_date_cf_id'];
+    $attendance_activity_custom_field = $this->options['views_form_attendance_activity_create_attendance_activity_cf_id'];
 
     $default_date = $form_state['values']['default_options_section']['date'];
     $activity_type_id = $form_state['values']['default_options_section']['type'];
