@@ -202,7 +202,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       ];
       $form[$this->options['id']][$row_index]['attendance'] = [
         '#type' => 'select',
-        '#title' => $this->options['views_form_attendance_activity_create_attendance_cf_label'],
+        '#title' => check_plain($this->options['views_form_attendance_activity_create_attendance_cf_label']),
         '#options' => ['default' => 'Use Default'] + _views_form_attendance_activity_create_get_attendance_value_options($this->options['views_form_attendance_activity_create_attendance_cf_id']),
         '#default_value' => 'default',
         '#prefix' => '<span class="attendance-create-select">',
@@ -210,7 +210,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       ];
       $form[$this->options['id']][$row_index]['activity'] = [
         '#type' => 'select',
-        '#title' => $this->options['views_form_attendance_activity_create_attendance_activity_cf_label'],
+        '#title' => check_plain($this->options['views_form_attendance_activity_create_attendance_activity_cf_label']),
         '#options' => ['' => 'No value', 'default' => 'Use Default'] + _views_form_attendance_activity_create_get_activity_cf_value_options($this->options['views_form_attendance_activity_create_attendance_activity_cf_id']),
         '#default_value' => 'default',
         '#prefix' => '<span class="attendance-create-select">',
@@ -269,11 +269,11 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
 
           try {
             $result = civicrm_api3('Activity', 'create', $params);
-            drupal_set_message('Activity created for contact with cid:' . $cid);
+            drupal_set_message(check_plain('Activity created for contact with cid:' . $cid));
           }
           catch (CiviCRM_API3_Exception $e) {
             drupal_set_message($e->getMessage());
-            drupal_set_message('Error creating activity for contact with cid:' . $cid);
+            drupal_set_message(check_plain('Error creating activity for contact with cid:' . $cid));
           }
         }
       }

@@ -19,7 +19,7 @@ function views_form_attendance_activity_create_views_form_substitutions() {
   $select_all_placeholder = check_plain('<!--views-form-attendance-activity-create-select-all-->');
   $select_all = array(
     '#type' => 'checkbox',
-    '#title' => 'Attendance',
+    '#title' => 'Attendance Activity Create',
     '#default_value' => FALSE,
     '#attributes' => array('class' => array('views-form-attendance-activity-create-select-all')),
   );
