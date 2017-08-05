@@ -26,8 +26,10 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
     $options = parent::option_definition();
 
     $options['views_form_attendance_activity_create_attendance_cf_id'] = array('default' => '');
+    $options['views_form_attendance_activity_create_attendance_cf_label'] = array('default' => '');
     $options['views_form_attendance_activity_create_attendance_date_cf_id'] = array('default' => '');
     $options['views_form_attendance_activity_create_attendance_activity_cf_id'] = array('default' => '');
+    $options['views_form_attendance_activity_create_attendance_activity_cf_label'] = array('default' => '');
     $options['views_form_attendance_activity_create_activity_type'] = array('default' => '');
     return $options;
   }
@@ -63,6 +65,13 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       '#options' => $activity_custom_field_options,
       '#default_value' => $this->options['views_form_attendance_activity_create_attendance_cf_id'],
     ];
+    $form['views_form_attendance_activity_create_attendance_cf_label'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => t('Attendance Custom Field Label'),
+      '#default_value' => $this->options['views_form_attendance_activity_create_attendance_cf_label'],
+      '#size' => 40,
+    ];
 
     $form['views_form_attendance_activity_create_attendance_date_cf_id'] = [
       '#type' => 'select',
@@ -79,7 +88,13 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       '#options' => $activity_custom_field_options,
       '#default_value' => $this->options['views_form_attendance_activity_create_attendance_activity_cf_id'],
     ];
-
+    $form['views_form_attendance_activity_create_attendance_activity_cf_label'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => t('Attendance Activity Custom Field Label'),
+      '#default_value' => $this->options['views_form_attendance_activity_create_attendance_activity_cf_label'],
+      '#size' => 40,
+    ];
     $form['views_form_attendance_activity_create_activity_type'] = [
       '#type' => 'select',
       '#required' => TRUE,
@@ -187,7 +202,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       ];
       $form[$this->options['id']][$row_index]['attendance'] = [
         '#type' => 'select',
-        '#title' => t('Attendance Status'),
+        '#title' => $this->options['views_form_attendance_activity_create_attendance_cf_label'],
         '#options' => ['default' => 'Use Default'] + _views_form_attendance_activity_create_get_attendance_value_options($this->options['views_form_attendance_activity_create_attendance_cf_id']),
         '#default_value' => 'default',
         '#prefix' => '<span class="attendance-create-select">',
@@ -195,7 +210,7 @@ class views_form_attendance_activity_create_field_handler_attendance  extends vi
       ];
       $form[$this->options['id']][$row_index]['activity'] = [
         '#type' => 'select',
-        '#title' => t('Activity'),
+        '#title' => $this->options['views_form_attendance_activity_create_attendance_activity_cf_label'],
         '#options' => ['' => 'No value', 'default' => 'Use Default'] + _views_form_attendance_activity_create_get_activity_cf_value_options($this->options['views_form_attendance_activity_create_attendance_activity_cf_id']),
         '#default_value' => 'default',
         '#prefix' => '<span class="attendance-create-select">',
